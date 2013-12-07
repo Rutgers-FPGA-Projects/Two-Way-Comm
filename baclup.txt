@@ -1,0 +1,63 @@
+PROCESS (SW(0))
+	BEGIN
+	if SW(0) = '1' THEN
+		writedata_left <= tempxL1;
+		writedata_right <= tempxR1;
+	else
+		writedata_left <=tempxL0;
+		writedata_right <=tempxR0;
+	END IF;
+	END PROCESS;
+	--GPIO(25) <= read_ready;
+	--GPIO(24) <= write_ready;
+	
+	--YOUR CODE GOES HERE
+	PROCESS( read_ready, write_ready,SW(0))
+	BEGIN
+		IF (read_ready ='1' AND write_ready = '1' AND SW(0)='1') THEN
+			tempxL1 <= (OTHERS=>'0');
+			tempxR1 <= (OTHERS=>'0');
+			GPIO(23 DOWNTO 0)<=readdata_left;
+			GPIO(24) <= read_ready;
+			GPIO(25) <= write_ready;
+			read_s <= '1';
+			write_s <= '1';
+		ELSIF (read_ready ='0' OR write_ready ='0') THEN
+			read_s <= '0';
+			write_s <= '0';
+		END IF;
+	END PROCESS;
+	
+--	PROCESS(read_ready,write_ready,SW(0))
+--	BEGIN
+--		IF(read_ready = '1' AND write_ready = '1' AND SW(0) = '1') THEN
+--			writedata_left = (OTHERS=>'0');
+--			writedata_right = (OTHERS=>'0');
+--			GPIO(23 DOWNTO 0)<=readdata_left;
+--			GPIO(24) <= read_ready;
+--			GPIO(25) <= write_ready;
+--			read_s <= '1';
+--			write_s <= '1';
+--		ELSIF(read_ready = '0' AND write_ready = '0' AND SW(0) = '1') THEN
+--			read_s <= '1';
+--			write_s <= '1';
+--			GPIO(24) <= '0';
+--			GPIO(25)	<= '1';
+--		
+--		
+--		END IF;
+--	END PROCESS;
+--	
+PROCESS(GPIO(24),GPIO(25),SW(0))
+	BEGIN
+		IF(GPIO(24) = '1' AND GPIO(25) = '1' AND SW(0)='0') THEN
+			tempxL0 <= GPIO(23 DOWNTO 0);
+			tempxL0 <= GPIO(23 DOWNTO 0);
+			read_s <= '1';
+			write_s <= '1';
+		ELSIF(GPIO(24) = '0' OR GPIO(25) = '0') THEN
+			read_s <= '0';
+			write_s <= '0';
+			
+		END IF;
+	END PROCESS;
